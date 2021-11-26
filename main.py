@@ -9,6 +9,8 @@ import aiohttp
 from discord import Webhook, AsyncWebhookAdapter, File, Embed
 from types import SimpleNamespace
 
+from discord.mentions import AllowedMentions
+
 
 def load_config():
     global config
@@ -18,9 +20,6 @@ def load_config():
         config = loads_to_object("config.json")
     return config
 
-def in_date_range(self,start,end):
-    ts = int(float(self.get_id()))
-    return ts > start and ts < end
 
 async def create_webhook(webhook_url):  
     session= aiohttp.ClientSession()
@@ -30,7 +29,8 @@ async def send_webhook(webhook,message):
     files = resolve_files(get_files(message))
     embeds= resolve_embeds(get_embeds(message))
     append_date_footer(embeds, message['timestamp'])
-    return await webhook.send(content=message['content'],username=get_username_dislay(message['author']),avatar_url=message['author']['avatarUrl'],files=files,embeds=embeds,wait=True)
+    allowed_mentions= AllowedMentions()
+    return await webhook.send(content=message['content'],username=get_username_dislay(message['author']),avatar_url=message['author']['avatarUrl'],files=files,embeds=embeds,allowed_mentions=allowed_mentions,wait=True)
 
 def read_file_url(url) -> BytesIO:
     req=Request(url, headers={'User-Agent' : "Magic Browser"})
@@ -45,8 +45,10 @@ def resolve_embeds(embeds):
     return attach
 
 def append_date_footer(embeds:list, date):
-    date=datetime.strptime(date,'%Y-%m-%dT%H:%M:%S.%f%z')
-
+    try:
+        date=datetime.strptime(date,'%Y-%m-%dT%H:%M:%S.%f%z')
+    except ValueError:
+        date= datetime.fromisoformat(date)
     date_time = date.strftime("%m/%d/%Y, %H:%M:%S")
     embeds.append(Embed(description= date_time))
 
@@ -80,7 +82,7 @@ def load_channel(path):
 
 async def main():
     config= load_config()
-    channel=load_channel("GDG Algiers' Community - admins - comanagers [787083224836734977].json")
+    channel=load_channel(config.channelPath)
     start= config.start
     end= config.end
     messages= channel['messages']
