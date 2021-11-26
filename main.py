@@ -43,6 +43,8 @@ def resolve_embeds(embeds):
     for em in embeds:
         if 'color' in em:
             em.pop('color')
+        if 'url' in em and em['url'] is None:
+            em.pop('url')
         attach.append( Embed.from_dict(em))
     return attach
 
