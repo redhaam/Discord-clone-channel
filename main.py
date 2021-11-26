@@ -41,6 +41,8 @@ def read_file_url(url) -> BytesIO:
 def resolve_embeds(embeds):
     attach =[]
     for em in embeds:
+        if 'color' in em:
+            em.pop('color')
         attach.append( Embed.from_dict(em))
     return attach
 
