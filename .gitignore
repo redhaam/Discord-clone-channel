@@ -1,3 +1,4 @@
 GDG*.json
 .venv
 config.json
+channel.json
