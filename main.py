@@ -51,7 +51,7 @@ def append_date_footer(embeds:list, date):
         date=datetime.strptime(date,'%Y-%m-%dT%H:%M:%S.%f%z')
     except ValueError:
         date= datetime.fromisoformat(date)
-    date_time = date.strftime("%m/%d/%Y, %H:%M:%S")
+    date_time = date.strftime("%d/%m/%Y, %H:%M:%S")
     embeds.append(Embed(description= date_time))
 
 def resolve_files(files):
